@@ -41,22 +41,36 @@ const FILES_TO_CACHE = [
     );
   });
   
-  self.addEventListener('fetch', (event) => {
-    if (event.request.url.startsWith(self.location.origin)) {
+  self.addEventListener("fetch", event => {
+    if (event.request.url.includes("/api/")) {
       event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
+        caches.open(RUNTIME).then(cache => {
+          return fetch(event.request)
+            .then(response => {
+              // If the response was good, clone it and store it in the cache.
+              if (response.status === 200) {
+                cache.put(event.request.url, response.clone());
+              }
   
-          return caches.open(RUNTIME).then((cache) => {
-            return fetch(event.request).then((response) => {
-              return cache.put(event.request, response.clone()).then(() => {
-                return response;
-              });
+              return response;
+            })
+            .catch(err => {
+              // Network request failed, try to get it from the cache.
+              return cache.match(event.request);
             });
-          });
+        }).catch(err => {
+          res.status(statusCode >= 100 && statusCode < 600 ? err.code : 500);
         })
       );
+  
+      return;
     }
+  
+    event.respondWith(
+      caches.open(PRECACHE).then(cache => {
+        return cache.match(event.request).then(response => {
+          return response || fetch(event.request);
+        });
+      })
+    );
   });
