@@ -1,6 +1,16 @@
 let db;
 const request = indexedDB.open("budget", 1);
 
+function checkForIndexedDb() {
+    indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+  
+    if (!window.indexedDB) {
+      console.log(`Your browser doesn't support a stable version of IndexedDB.`);
+      return false;
+    }
+    return true;
+  }
+
 request.onupgradeneeded = ({ target }) => {
     let db = target.result;
     db.createObjectStore("pending", { autoIncrement: true });
