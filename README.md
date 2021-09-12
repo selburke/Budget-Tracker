@@ -7,3 +7,4 @@
 * Initially, the application was functional on localhost/3000. However, I had issues deploying on Heroku.
 
 Deployed Link: https://sb-budget-tracker.herokuapp.com/
+
