@@ -7,6 +7,7 @@ const FILES_TO_CACHE = [
     './index.js',
     './manifest.webmanifest',
     './styles.css',
+    './indexedDB.js'
   ];
   
   const PRECACHE = `pre-cache-v1`;
